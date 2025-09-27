@@ -31,8 +31,8 @@ function SideBar() {
   return (
     <div className='h-screen p-5 shadow-md'>
       <div className='flex items-center gap-2'>
-            <Image src={'/logo2.svg'} alt='Logo' width={40} height={40} />
-            <h2 className="text-2xl font-bold">Simple Study</h2>
+            <Image src={'/logo.svg'} alt='Logo' width={40} height={40} />
+            <h2 className="text-2xl font-bold">AI Study Hub</h2>
       </div>
       
       <div className='mt-10'>
