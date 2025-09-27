@@ -19,7 +19,7 @@ export const STUDY_MATERIAL_TABLE = pgTable('study_materials', {
   courseLayout: json(),
   createdBy: varchar().notNull(),
   status: varchar().default('Generating'),
-   
+
 });
 
 export const CHAPTER_NOTES_TABLE = pgTable('chapterNotes',{
@@ -27,4 +27,4 @@ export const CHAPTER_NOTES_TABLE = pgTable('chapterNotes',{
   courseId: varchar().notNull(),
   chapterId: integer().notNull(),
   notes: text()
-})
+});
