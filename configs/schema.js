@@ -18,7 +18,8 @@ export const STUDY_MATERIAL_TABLE = pgTable('study_materials', {
   difficultyLevel: varchar().default('Easy'),
   courseLayout: json(),
   createdBy: varchar().notNull(),
-  status: varchar().default('Generating') 
+  status: varchar().default('Generating'),
+   
 });
 
 export const CHAPTER_NOTES_TABLE = pgTable('chapterNotes',{

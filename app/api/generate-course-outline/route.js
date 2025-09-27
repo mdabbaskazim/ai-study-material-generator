@@ -6,11 +6,18 @@ import { inngest } from "@/inngest/client";
 
 
 
-export async function POST(req){
+export async function POST(req) {
 
-    const {courseId,topic,courseType, difficultyLevel, createdBy} = await req.json();
+  const { courseId, topic, courseType, difficultyLevel, createdBy } = await req.json();
 
-  const finalPrompt = `Create a comprehensive course structure for "${topic}" with difficulty level "${difficultyLevel}" designed for "${courseType}" preparation.
+  if (!courseId || !topic || !courseType || !difficultyLevel || !createdBy) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+  const PROMPT = `Create a comprehensive course structure for "${topic}" with difficulty level "${difficultyLevel}" designed for "${courseType}" preparation.
 
 Format your response as a JSON object with the following exact structure:
 
@@ -31,39 +38,50 @@ Format your response as a JSON object with the following exact structure:
     }
   ]
 }`;
-    
-    
-    
-    // const PROMPT = 'Generate a study material for '+topic+' for '+courseType+' and level of difficulty will be '+difficultyLevel+' with summary for each chapter, Topic list in each chapter, all result in JSON format';
-    //Generate Course Layout using AI
-    const aiResp = await courseOutlineAIModel.sendMessage(PROMPT);  
-    const aiResult = JSON.parse(aiResp.response.text());
-    
-    //Save  the result along with User Input
-    const dbResult = await db.insert(STUDY_MATERIAL_TABLE).values({
-        courseId: courseId,
-        courseType: courseType,
-        createdBy: createdBy,
-        topic: topic,
-        courseLayout: aiResult,
-        difficultyLevel: difficultyLevel,  
-    }).returning({resp:STUDY_MATERIAL_TABLE});
-
-    console.log("Course Layout Generated:", dbResult);
-
-    //Trigger the Inngest function to generate chapter notes
-
-    // const result = await inngest.send({
-    //     name: 'notes.generate',
-    //     data:{
-    //         course: dbResult[0].resp
-    //     }
 
 
-    // });
-    // console.log(result);
 
-    return NextResponse.json({result:dbResult[0]})
+  // const PROMPT = 'Generate a study material for '+topic+' for '+courseType+' and level of difficulty will be '+difficultyLevel+' with summary for each chapter, Topic list in each chapter, all result in JSON format';
+  // Generate Course Layout using AI
+ 
+  try {
+     // It handles the API call, gets the response, and parses the JSON.
+    const aiResult = await courseOutlineAIModel(PROMPT);
+
+     // 2. ADDED: A crucial check to ensure the AI call was successful.
+    if (!aiResult) {
+      throw new Error("Failed to generate course outline from AI model.");
+    }
+
+  //Save  the result along with User Input
+  const dbResult = await db.insert(STUDY_MATERIAL_TABLE).values({
+    courseId: courseId,
+    courseType: courseType,
+    createdBy: createdBy,
+    topic: topic,
+    courseLayout: aiResult,
+    difficultyLevel: difficultyLevel,
+  }).returning({ resp: STUDY_MATERIAL_TABLE });
+
+  console.log("Course Layout Generated:", dbResult);
+
+  //Trigger the Inngest function to generate chapter notes
+
+  // const result = await inngest.send({
+  //     name: 'notes.generate',
+  //     data:{
+  //         course: dbResult[0].resp
+  //     }
+
+
+  // });
+  // console.log(result);
+
+  return NextResponse.json({ result: dbResult[0] })
+}
+catch (error) {
+    console.error("API Route Error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
 }
 
-
+}
