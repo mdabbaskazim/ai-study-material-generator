@@ -1,4 +1,4 @@
-import { serial, pgTable, varchar, boolean, json, integer, text } from "drizzle-orm/pg-core";
+import { serial, pgTable, varchar, boolean, json, integer, text,timestamp } from "drizzle-orm/pg-core";
 
 // Define the schema for the users table
 // This schema will be used to create the table in the database
@@ -19,7 +19,7 @@ export const STUDY_MATERIAL_TABLE = pgTable('study_materials', {
   courseLayout: json(),
   createdBy: varchar().notNull(),
   status: varchar().default('Generating'),
-
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const CHAPTER_NOTES_TABLE = pgTable('chapterNotes',{

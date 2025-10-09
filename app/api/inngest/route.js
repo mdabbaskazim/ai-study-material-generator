@@ -9,6 +9,6 @@ export const { GET, POST, PUT } = serve({
     /* your functions will be passed here later! */
     helloWorld,
     CreateNewUser,
-    // GenerateNotes,
+    GenerateNotes,
   ],
 });

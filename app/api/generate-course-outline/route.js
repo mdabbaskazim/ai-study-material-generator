@@ -29,6 +29,7 @@ Format your response as a JSON object with the following exact structure:
   "chapters": [
     {
       "chapterTitle": "string - Chapter name",
+      "emoji": "emoji for the chapter",
       "chapterSummary": "string - 1-2 sentences describing what this chapter covers",
       "topics": [
         "string - Topic 1",
@@ -67,15 +68,15 @@ Format your response as a JSON object with the following exact structure:
 
   //Trigger the Inngest function to generate chapter notes
 
-  // const result = await inngest.send({
-  //     name: 'notes.generate',
-  //     data:{
-  //         course: dbResult[0].resp
-  //     }
+  const result = await inngest.send({
+      name: 'notes.generate',
+      data:{
+          course: dbResult[0].resp
+      }
 
 
-  // });
-  // console.log(result);
+  });
+  console.log(result);
 
   return NextResponse.json({ result: dbResult[0] })
 }

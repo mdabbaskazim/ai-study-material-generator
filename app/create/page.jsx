@@ -8,7 +8,7 @@ import { v4 as uuidv4} from 'uuid'
 import { useUser } from '@clerk/nextjs';
 import { Loader } from 'lucide-react'
 import { useRouter } from 'next/navigation';
-
+import { toast } from "sonner"
 
 function Create() {
   const [step,setStep]= useState(0);
@@ -37,6 +37,8 @@ function Create() {
     });
     setLoading(false);
     router.replace('/dashboard');
+    //Toast Notification
+    toast("Your course content is generating, Click on Refresh Button");
     console.log(result.data.result.resp);
   }
 
