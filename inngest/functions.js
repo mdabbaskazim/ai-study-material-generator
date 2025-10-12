@@ -1,6 +1,8 @@
 import { eq } from 'drizzle-orm';
 import { db } from "@/configs/db";
-import { USER_TABLE, CHAPTER_NOTES_TABLE, STUDY_MATERIAL_TABLE } from "@/configs/schema";
+import { USER_TABLE, 
+  CHAPTER_NOTES_TABLE, 
+  STUDY_MATERIAL_TABLE } from "@/configs/schema";
 import { inngest } from "@/inngest/client";
 import { generateNotesAiModel } from '@/configs/AiModel';
 
