@@ -3,7 +3,7 @@ import { useParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import CourseIntroCard from "./_components/CourseIntroCard";
-//import StudyMaterialSection from "./_components/StudyMaterialSection";
+import StudyMaterialSection from "./_components/StudyMaterialSection";
 import ChapterList from "./_components/ChapterList";
 
 function Course() {
@@ -25,7 +25,7 @@ function Course() {
             {/* Course Intro */}
             <CourseIntroCard course={course} />
             {/* Study Materials Options */}
-            {/* <StudyMaterialSection courseId={courseId} course={course} /> */}
+            <StudyMaterialSection courseId={courseId} />
             {/* Chapter List */}
             <ChapterList course={course} />
         </div>
