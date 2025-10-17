@@ -49,10 +49,70 @@ export const generateNotesAiModel = async (prompt) => {
       config: generationConfig,
       contents: prompt,
  });
-    // const response = result;
     return response.text;
   } catch (error) {
     console.error("Generate Notes AI Model Error:", error);
+    return null; // Return null to indicate an error
+  }
+};
+
+const generationConfig2 = {
+  temperature: 1,
+    topP: 0.95,
+    maxOutputTokens: 8192,
+    responseMimeType: 'application/json',
+    systemInstruction: [
+        {
+          text: `## CRITICAL: Output Structure
+**NEVER modify this JSON structure. Always use exactly this format:**
+
+\`\`\`json
+{
+  "topic": "string",
+  "total_cards": number,
+  "flashcards": [
+    {
+      "id": number,
+      "bloom_level": "Remember|Understand|Apply|Analyze|Evaluate|Create",
+      "cognitive_level": number (1-6),
+      "question": "string",
+      "answer": "string",
+      "difficulty": "easy|medium|hard",
+      "tags": ["string"]
+    }
+  ]
+}
+\`\`\`
+
+## Rules
+- Create 2 cards per Bloom level (12 total)
+- Progress from simple recall to complex creation
+- Use exact field names and structure above
+- Ensure valid JSON syntax
+
+## Bloom's Levels
+1. **Remember**: Recall facts (Define, List, Name)
+2. **Understand**: Explain concepts (Explain, Summarize, Compare)
+3. **Apply**: Use in new situations (Apply, Demonstrate, Solve)
+4. **Analyze**: Draw connections (Analyze, Differentiate, Examine)
+5. **Evaluate**: Justify decisions (Evaluate, Critique, Argue)
+6. **Create**: Produce original work (Design, Develop, Formulate)
+
+Output only valid JSON. No explanations.`,
+        }
+    ],
+};
+
+export const generateFlashCardsAiModel = async (prompt) => {
+  try {
+    const response = await ai.models.generateContent({
+      model: model,
+      config: generationConfig2,
+      contents: prompt,
+ });
+    return JSON.parse(response.text);
+  } catch (error) {
+    console.error("Generate Flash Cards AI Model Error:", error);
     return null; // Return null to indicate an error
   }
 };
