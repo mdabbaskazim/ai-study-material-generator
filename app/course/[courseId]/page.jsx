@@ -25,7 +25,7 @@ function Course() {
             {/* Course Intro */}
             <CourseIntroCard course={course} />
             {/* Study Materials Options */}
-            <StudyMaterialSection courseId={courseId} />
+            <StudyMaterialSection courseId={courseId} course={course} />
             {/* Chapter List */}
             <ChapterList course={course} />
         </div>
