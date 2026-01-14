@@ -5,16 +5,16 @@
 import { GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({
-    apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY,
-  });
-  const config = {
-    temperature: 0.3,
-    topP: 0.95,
-    maxOutputTokens: 8192,
-    responseMimeType: 'application/json',
-  };
+  apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY,
+});
+const config = {
+  temperature: 0.3,
+  topP: 0.95,
+  maxOutputTokens: 8192,
+  responseMimeType: 'application/json',
+};
 
-  const model = 'gemini-2.0-flash';
+const model = 'gemini-2.5-flash-lite';
 
 
 
@@ -24,7 +24,7 @@ export const courseOutlineAIModel = async (prompt) => {
       model: model,
       config: config,
       contents: prompt,
- });
+    });
     // const response = result;
     return JSON.parse(response.text);
   } catch (error) {
@@ -36,9 +36,9 @@ export const courseOutlineAIModel = async (prompt) => {
 
 const generationConfig = {
   temperature: 1,
-    topP: 0.95,
-    maxOutputTokens: 8192,
-    responseMimeType: 'text/plain',
+  topP: 0.95,
+  maxOutputTokens: 8192,
+  responseMimeType: 'text/plain',
 }
 
 
@@ -48,7 +48,7 @@ export const generateNotesAiModel = async (prompt) => {
       model: model,
       config: generationConfig,
       contents: prompt,
- });
+    });
     return response.text;
   } catch (error) {
     console.error("Generate Notes AI Model Error:", error);
@@ -58,12 +58,12 @@ export const generateNotesAiModel = async (prompt) => {
 
 const generationConfig2 = {
   temperature: 1,
-    topP: 0.95,
-    maxOutputTokens: 8192,
-    responseMimeType: 'application/json',
-    systemInstruction: [
-        {
-          text: `## CRITICAL: Output Structure
+  topP: 0.95,
+  maxOutputTokens: 8192,
+  responseMimeType: 'application/json',
+  systemInstruction: [
+    {
+      text: `## CRITICAL: Output Structure
 **NEVER modify this JSON structure. Always use exactly this format:**
 
 \`\`\`json
@@ -99,8 +99,8 @@ const generationConfig2 = {
 6. **Create**: Produce original work (Design, Develop, Formulate)
 
 Output only valid JSON. No explanations.`,
-        }
-    ],
+    }
+  ],
 };
 
 export const generateFlashCardsAiModel = async (prompt) => {
@@ -109,10 +109,54 @@ export const generateFlashCardsAiModel = async (prompt) => {
       model: model,
       config: generationConfig2,
       contents: prompt,
- });
+    });
     return JSON.parse(response.text);
   } catch (error) {
     console.error("Generate Flash Cards AI Model Error:", error);
+    return null; // Return null to indicate an error
+  }
+};
+
+
+
+const quizConfig = {
+  responseMimeType: 'application/json',
+  systemInstruction: [
+    {
+      text: `Format your response as a JSON object with the following exact structure:
+ 
+{
+  "quizTitle": "string - The main title of the quiz",
+  "questions": [
+    {
+      "question": "string - question?",
+      "options": ["option1", "option2", "option3", "option4"],
+      "answer": "string -  answer "
+    },
+    {
+      "question": "question?",
+      "options": ["Option1", "Option2", "Option3", "Option4"],
+      "answer": "string - answer"
+    }
+  ]
+}
+
+
+`,
+    }
+  ],
+};
+
+export const GenerateQuizAiModel = async (prompt) => {
+  try {
+    const response = await ai.models.generateContent({
+      model: model,
+      config: quizConfig,
+      contents: prompt,
+    });
+    return JSON.parse(response.text);
+  } catch (error) {
+    console.error("Generate Quiz AI Model Error:", error);
     return null; // Return null to indicate an error
   }
 };
