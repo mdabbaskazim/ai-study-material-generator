@@ -7,7 +7,12 @@ import {
   STUDY_TYPE_CONTENT_TABLE
 } from "@/configs/schema";
 import { inngest } from "@/inngest/client";
-import { generateFlashCardsAiModel, generateNotesAiModel, GenerateQuizAiModel } from '@/configs/AiModel';
+import { 
+  generateFlashCardsAiModel, 
+  generateNotesAiModel,
+  GenerateQuizAiModel,
+  GenerateQnAAiModel
+ } from '@/configs/AiModel';
 
 export const helloWorld = inngest.createFunction(
   { id: "hello-world" },
@@ -165,7 +170,7 @@ export const GenerateStudyTypeContent = inngest.createFunction(
         } else if (studyType === "Quiz") {
           result = await GenerateQuizAiModel(prompt);
         } else if (studyType === "QA") {
-          //result = await GenerateQnAAiModel.sendMessage(prompt); // Add new condition
+          result = await GenerateQnAAiModel(prompt); // Add new condition
         } else {
           throw new Error(`Unsupported studyType: ${studyType}`);
         }

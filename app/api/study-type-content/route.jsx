@@ -33,7 +33,7 @@ export async function POST(req) {
       case "Quiz":
         return `Generate Quiz on topic: ${chapters} with questions and options along with the answer in JSON Format, (Max 10)`;
       case "QA":
-        return `Generate a detailed Q&A on topic: ${chapters} in JSON format with each question and a detailed answer, Maximum10`;
+        return `Generate a detailed Q&A on topic: ${chapters} in JSON format with each question and a detailed answer, Maximum 10`;
       default:
         throw new Error(`Unsupported study type: ${type}`);
     }
