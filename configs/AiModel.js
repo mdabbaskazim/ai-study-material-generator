@@ -160,3 +160,40 @@ export const GenerateQuizAiModel = async (prompt) => {
     return null; // Return null to indicate an error
   }
 };
+
+
+ const QnAconfig = {
+    thinkingConfig: {
+      thinkingBudget: 0,
+    },
+    responseMimeType: 'application/json',
+    systemInstruction: [
+        {
+          text: `{
+  "qna_list": [
+    {
+      "question": "string - question?",
+      "answer": "string - answer"
+    },
+    {
+      "question": "string - question?",
+      "answer": "string - answer"
+    }
+}`,
+        }
+    ],
+  };
+
+export const GenerateQnAAiModel = async (prompt) => {
+  try {
+    const response = await ai.models.generateContent({
+      model: model,
+      config: QnAconfig,
+      contents: prompt,
+    });
+    return JSON.parse(response.text);
+  } catch (error) {
+    console.error("Generate QnA AI Model Error:", error);
+    return null; // Return null to indicate an error
+  }
+};
