@@ -2,12 +2,13 @@ import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { RefreshCcw } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { toast } from "sonner";
 
 const MaterialCardItem = ({ item, studyTypeContent, course, refreshData }) => {
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const isContentReady = () => {
     if (!studyTypeContent) return false;
@@ -39,7 +40,12 @@ const MaterialCardItem = ({ item, studyTypeContent, course, refreshData }) => {
         chapters: chapters,
       });
 
-      refreshData(true);
+      //  Add a small delay (1 second) before refreshing
+      // This ensures the DB has finished saving before we read from it.
+      setTimeout(() => {
+        refreshData(true); 
+        setLoading(false); 
+      }, 1000);
       toast("Content generation started. Pls refresh after some time.");
     } catch (error) {
       console.error("Generation error:", error);
@@ -55,7 +61,6 @@ const MaterialCardItem = ({ item, studyTypeContent, course, refreshData }) => {
   const contentReady = isContentReady();
 
   return (
-    <Link href={"/course/" + course?.courseId + item.path}>
       <div
         className={`border shadow-md rounded-lg p-5 flex flex-col items-center ${
           !contentReady && "grayscale"
@@ -85,12 +90,14 @@ const MaterialCardItem = ({ item, studyTypeContent, course, refreshData }) => {
             Generate
           </Button>
         ) : (
-          <Button className="mt-3 w-full" variant="outline">
+          <Button className="mt-3 w-full" 
+          variant="outline"
+          onClick={() => router.push("/course/" + course?.courseId + item.path)}
+          >
             View
           </Button>
         )}
       </div>
-    </Link>
   );
 };
 

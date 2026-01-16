@@ -51,6 +51,7 @@ function Create() {
         {step == 0 ? <SelectOption selectedStudyType={(value)=>handleUserInput('courseType', value)}/>
          : <TopicInput setTopic={(value)=>handleUserInput('topic', value)}
          setDifficultyLevel={(value)=>handleUserInput('difficultyLevel', value)}
+         setLanguage={(value)=>handleUserInput('language', value)}
          />}
       </div>
       

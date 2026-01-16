@@ -69,8 +69,8 @@ function Flashcards() {
 
   return (
     <div>
-      <h2 className="font-bold text-2xl">Flashcards</h2>
-      <p>Flashcards: The Ultimate tool to lock in Concepts!</p>
+      <h2 className="font-bold text-center text-2xl">Flashcards</h2>
+      <p className="text-center">Flashcards: The Ultimate tool to lock in Concepts!</p>
 
       <div className="mt-10">
         <Carousel setApi={setApi}>

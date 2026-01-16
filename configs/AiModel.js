@@ -7,11 +7,37 @@ import { GoogleGenAI } from "@google/genai";
 const ai = new GoogleGenAI({
   apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY,
 });
-const config = {
+const courseOutlineConfig = {
   temperature: 0.3,
   topP: 0.95,
   maxOutputTokens: 8192,
   responseMimeType: 'application/json',
+  systemInstruction: [
+        {
+          text: `The content will be in the given language but structure keywords like courseTitle,courseType remain in english
+          Format your response as a JSON object with the following exact structure:
+          
+          {
+            "courseTitle": "string - The main title of the course",
+            "courseType": "string - job interview/exam/other",
+            "difficulty": "string - Easy/Medium/Hard",
+            "language" : "string - language"
+            "courseSummary": "string - 2-3 sentences describing the course comprehensively, tailored to the course type",
+            "chapters": [
+              {
+                "chapterTitle": "string - Chapter name",
+                "emoji": "emoji for the chapter",
+                "chapterSummary": "string - 1-2 sentences describing what this chapter covers",
+                "topics": [
+                  "string - Topic 1",
+                  "string - Topic 2",
+                  "etc."
+                ]
+              }
+            ]
+          }`,
+        }
+    ],
 };
 
 const model = 'gemini-2.5-flash-lite';
@@ -22,7 +48,7 @@ export const courseOutlineAIModel = async (prompt) => {
   try {
     const response = await ai.models.generateContent({
       model: model,
-      config: config,
+      config: courseOutlineConfig,
       contents: prompt,
     });
     // const response = result;
@@ -34,7 +60,7 @@ export const courseOutlineAIModel = async (prompt) => {
 };
 
 
-const generationConfig = {
+const generateNotesConfig = {
   temperature: 1,
   topP: 0.95,
   maxOutputTokens: 8192,
@@ -46,7 +72,7 @@ export const generateNotesAiModel = async (prompt) => {
   try {
     const response = await ai.models.generateContent({
       model: model,
-      config: generationConfig,
+      config: generateNotesConfig,
       contents: prompt,
     });
     return response.text;
@@ -56,14 +82,15 @@ export const generateNotesAiModel = async (prompt) => {
   }
 };
 
-const generationConfig2 = {
+const generateFlashCardsConfig = {
   temperature: 1,
   topP: 0.95,
   maxOutputTokens: 8192,
   responseMimeType: 'application/json',
   systemInstruction: [
     {
-      text: `## CRITICAL: Output Structure
+      text: `The content will be in the given language but structure keywords like topic,flashcards remain in english
+      ## CRITICAL: Output Structure
 **NEVER modify this JSON structure. Always use exactly this format:**
 
 \`\`\`json
@@ -107,7 +134,7 @@ export const generateFlashCardsAiModel = async (prompt) => {
   try {
     const response = await ai.models.generateContent({
       model: model,
-      config: generationConfig2,
+      config: generateFlashCardsConfig,
       contents: prompt,
     });
     return JSON.parse(response.text);
@@ -119,11 +146,12 @@ export const generateFlashCardsAiModel = async (prompt) => {
 
 
 
-const quizConfig = {
+const GenerateQuizConfig = {
   responseMimeType: 'application/json',
   systemInstruction: [
     {
-      text: `Format your response as a JSON object with the following exact structure:
+      text: `The content will be in the given language but structure keywords like quizTitle,questions remain in english
+      Format your response as a JSON object with the following exact structure:
  
 {
   "quizTitle": "string - The main title of the quiz",
@@ -151,7 +179,7 @@ export const GenerateQuizAiModel = async (prompt) => {
   try {
     const response = await ai.models.generateContent({
       model: model,
-      config: quizConfig,
+      config: GenerateQuizConfig,
       contents: prompt,
     });
     return JSON.parse(response.text);
@@ -162,14 +190,17 @@ export const GenerateQuizAiModel = async (prompt) => {
 };
 
 
- const QnAconfig = {
+ const GenerateQnAConfig = {
     thinkingConfig: {
       thinkingBudget: 0,
     },
     responseMimeType: 'application/json',
     systemInstruction: [
         {
-          text: `{
+          text: `
+          The content will be in the given language but structure keywords like qna_list,question,answer remain in english
+      Format your response as a JSON object with the following exact structure:
+          {
   "qna_list": [
     {
       "question": "string - question?",
@@ -188,7 +219,7 @@ export const GenerateQnAAiModel = async (prompt) => {
   try {
     const response = await ai.models.generateContent({
       model: model,
-      config: QnAconfig,
+      config: GenerateQnAConfig,
       contents: prompt,
     });
     return JSON.parse(response.text);
