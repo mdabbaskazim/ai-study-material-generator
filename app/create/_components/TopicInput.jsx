@@ -8,7 +8,7 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 
-function TopicInput({setTopic, setDifficultyLevel}) {
+function TopicInput({setTopic, setDifficultyLevel, setLanguage}) {
     return (
         <div className="flex flex-col mt-10 w-full">
             <h2>Enter the topic or keywords for your study material</h2>
@@ -26,6 +26,17 @@ function TopicInput({setTopic, setDifficultyLevel}) {
                 </SelectContent>
             </Select>
 
+             <h2 className='mt-5 mb-3'>Select the Language</h2>
+            <Select onValueChange={(value) => setLanguage(value)}>
+                <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Languages" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="English">English</SelectItem>
+                    <SelectItem value="Hindi">Hindi</SelectItem>
+                    <SelectItem value="Urdu">Urdu</SelectItem>
+                </SelectContent>
+            </Select>
         </div>
     )
 }

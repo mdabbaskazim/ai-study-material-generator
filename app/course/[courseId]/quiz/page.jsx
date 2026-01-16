@@ -70,7 +70,7 @@ function Quiz() {
 
   return (
     <div>
-      <h2 className="font-bold text-3xl mb-8">Quiz</h2>
+      <h2 className="font-bold text-center text-3xl mb-8">Quiz</h2>
 
       {quiz.length > 0 ? (
         <>

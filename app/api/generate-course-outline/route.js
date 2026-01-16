@@ -8,37 +8,16 @@ import { inngest } from "@/inngest/client";
 
 export async function POST(req) {
 
-  const { courseId, topic, courseType, difficultyLevel, createdBy } = await req.json();
+  const { courseId, topic, courseType, difficultyLevel, language, createdBy } = await req.json();
 
-  if (!courseId || !topic || !courseType || !difficultyLevel || !createdBy) {
+  if (!courseId || !topic || !courseType || !difficultyLevel || !language || !createdBy) {
       return NextResponse.json(
         { error: "Missing required fields" },
         { status: 400 }
       );
     }
 
-  const PROMPT = `Create a comprehensive course structure for "${topic}" with difficulty level "${difficultyLevel}" designed for "${courseType}" preparation.
-
-Format your response as a JSON object with the following exact structure:
-
-{
-  "courseTitle": "string - The main title of the course",
-  "courseType": "string - job interview/exam/other",
-  "difficulty": "string - Easy/Medium/Hard",
-  "courseSummary": "string - 2-3 sentences describing the course comprehensively, tailored to the course type",
-  "chapters": [
-    {
-      "chapterTitle": "string - Chapter name",
-      "emoji": "emoji for the chapter",
-      "chapterSummary": "string - 1-2 sentences describing what this chapter covers",
-      "topics": [
-        "string - Topic 1",
-        "string - Topic 2",
-        "etc."
-      ]
-    }
-  ]
-}`;
+  const PROMPT = `Create a comprehensive course structure for "${topic}" with difficulty level "${difficultyLevel}" designed for "${courseType}" preparation in "${language}" max 6.`;
 
 
 
@@ -62,6 +41,7 @@ Format your response as a JSON object with the following exact structure:
     topic: topic,
     courseLayout: aiResult,
     difficultyLevel: difficultyLevel,
+    language: language,
   }).returning({ resp: STUDY_MATERIAL_TABLE });
 
   console.log("Course Layout Generated:", dbResult);
