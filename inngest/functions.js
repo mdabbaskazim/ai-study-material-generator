@@ -7,12 +7,13 @@ import {
   STUDY_TYPE_CONTENT_TABLE
 } from "@/configs/schema";
 import { inngest } from "@/inngest/client";
-import { 
-  generateFlashCardsAiModel, 
+import {
+  generateFlashCardsAiModel,
   generateNotesAiModel,
   GenerateQuizAiModel,
   GenerateQnAAiModel
- } from '@/configs/AiModel';
+} from '@/configs/AiModel';
+import { fetchContextFromRAG } from '@/configs/RagModel'
 
 export const helloWorld = inngest.createFunction(
   { id: "hello-world" },
@@ -102,25 +103,45 @@ export const GenerateNotes = inngest.createFunction(
         //   index= index+1;
         // })
 
-        // Use Promise.all to wait for all chapter notes to be generated
-        await Promise.all(
-          Chapters.map(async (chapter, index) => {
-            const PROMPT = `Generate ${difficultyLevel} ${courseType} material detail content for each chapter, 
-            Make sure to include all topic point in the content, 
-            make sure to give content in Format as clean HTML fragments (NO <html>, <head>, <body>, or <title> tags,Use semantic HTML5 tags: <h1>, <h2>, <h3>, <h4>, <p>, <ul>, <li>, <strong>, <em>, <code>, <section>, Use <ul> and <li> tags for all lists (never use asterisks or dashes),
-            Ensure all topics are thoroughly covered, The chapters:` + JSON.stringify(chapter);
+        // 🔴 CHANGED: Using 'for...of' loop for Sequential Processing
+        // This prevents 429 Errors by doing one chapter at a time.
+        for (const [index, chapter] of Chapters.entries()) {
+          // FETCH CONTEXT: Get relevant chunks based on the chapter name/content
+          const ragQuery = `${chapter.chapterTitle}.
+          Key topics: ${chapter.topics.join(", ")}.
+          Explain concepts clearly for ${courseType}.`.trim();
 
-            const aiResp = await generateNotesAiModel(PROMPT);
+          const { context, sources } = await fetchContextFromRAG(ragQuery);
+          console.log(context,sources)
 
-            // Insert notes into CHAPTER_NOTES_TABLE
-            await db.insert(CHAPTER_NOTES_TABLE).values({
-              chapterId: index + 1, // Using 1-based indexing for chapters
-              courseId: course?.courseId,
-              notes: aiResp,
-            });
-          })
-        );
+          const PROMPT = `
+              Role: You are an expert teacher creating study notes.
+              Task: Generate detailed ${difficultyLevel} ${courseType} notes for the chapter described below.
+              
+              CONTEXT FROM TEXTBOOK/DOCUMENTS(Use if Relevant):
+              """
+              ${context}
+              """
+              IN LAST MAKE REFERENCE SECTION:
+              ${JSON.stringify(sources)}
 
+              CHAPTER DETAILS:
+              ${JSON.stringify(chapter)}
+            `;
+
+          const aiResp = await generateNotesAiModel(PROMPT);
+
+          // Insert notes into CHAPTER_NOTES_TABLE
+          await db.insert(CHAPTER_NOTES_TABLE).values({
+            chapterId: index + 1, // Using 1-based indexing for chapters
+            courseId: course?.courseId,
+            notes: aiResp,
+          });
+
+          // 🛡️ SAFETY PAUSE: Sleep for 1.5 seconds between chapters
+          // This gives the AI API a moment to "cool down" and prevents rate limits.
+          await new Promise(resolve => setTimeout(resolve, 1500));
+        }
         return 'completed';
       });
 
@@ -166,7 +187,7 @@ export const GenerateStudyTypeContent = inngest.createFunction(
       async () => {
         let result;
         if (studyType === "Flashcard") {
-          result =  await generateFlashCardsAiModel(prompt);
+          result = await generateFlashCardsAiModel(prompt);
         } else if (studyType === "Quiz") {
           result = await GenerateQuizAiModel(prompt);
         } else if (studyType === "QA") {
@@ -178,15 +199,15 @@ export const GenerateStudyTypeContent = inngest.createFunction(
         return AIResult;
       });
 
-      //Save the result
-      const DbResult = await step.run("Save Result to DB", async () => {
+    //Save the result
+    const DbResult = await step.run("Save Result to DB", async () => {
       const result = await db
         .update(STUDY_TYPE_CONTENT_TABLE)
         .set({
           content: AiResult,
           status: "Ready",
         })
-        .where(eq(STUDY_TYPE_CONTENT_TABLE.id, recordId));        
+        .where(eq(STUDY_TYPE_CONTENT_TABLE.id, recordId));
 
       return "Data Inserted";
     });
