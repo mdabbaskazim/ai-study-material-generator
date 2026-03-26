@@ -13,8 +13,8 @@ const courseOutlineConfig = {
   maxOutputTokens: 8192,
   responseMimeType: 'application/json',
   systemInstruction: [
-        {
-          text: `The content will be in the given language but structure keywords like courseTitle,courseType remain in english
+    {
+      text: `The content will be in the given language but structure keywords like courseTitle,courseType remain in english
           Format your response as a JSON object with the following exact structure:
           
           {
@@ -36,11 +36,15 @@ const courseOutlineConfig = {
               }
             ]
           }`,
-        }
-    ],
+    }
+  ],
 };
 
 const model = 'gemini-2.5-flash-lite';
+//const model = 'gemini-2.5-flash';
+//const model = 'gemini-flash-lite-latest';
+//const model = 'gemini-flash-latest'; // slow model
+ 
 
 
 
@@ -65,6 +69,21 @@ const generateNotesConfig = {
   topP: 0.95,
   maxOutputTokens: 8192,
   responseMimeType: 'text/plain',
+  systemInstruction: [
+    {
+      text: `INSTRUCTIONS:
+              - If the context is not appropriate or irrelevant with difficulty level and course type use your own knowledge.
+              - Use the provided Context if relevant.
+              - If the context is empty, rely on your general knowledge.
+              - Include all key topics mentioned in the chapter details.
+              - Format as clean HTML fragments (NO <html>, <head>, <body>, or <title> tags).
+              - Use semantic HTML5 tags: <h2>, <h3>, <h4>, <p>, <ul>, <li>, <strong>, <em>, <code>, <section>.
+              - Use <ul> and <li> tags for all lists (never use asterisks or dashes).
+              - Ensure strictly academic tone.
+              - Follow bloom's level fo better notes making
+              -each sub topic should have decent level of details and examples`,
+    }
+  ],
 }
 
 
@@ -112,7 +131,8 @@ const generateFlashCardsConfig = {
 \`\`\`
 
 ## Rules
-- Create 2 cards per Bloom level (12 total)
+- Create  max 12 total flashcard.
+- Use Bloom's levels.
 - Progress from simple recall to complex creation
 - Use exact field names and structure above
 - Ensure valid JSON syntax
@@ -120,10 +140,7 @@ const generateFlashCardsConfig = {
 ## Bloom's Levels
 1. **Remember**: Recall facts (Define, List, Name)
 2. **Understand**: Explain concepts (Explain, Summarize, Compare)
-3. **Apply**: Use in new situations (Apply, Demonstrate, Solve)
-4. **Analyze**: Draw connections (Analyze, Differentiate, Examine)
-5. **Evaluate**: Justify decisions (Evaluate, Critique, Argue)
-6. **Create**: Produce original work (Design, Develop, Formulate)
+
 
 Output only valid JSON. No explanations.`,
     }
@@ -169,7 +186,14 @@ const GenerateQuizConfig = {
   ]
 }
 
+## Rules
+- Create max 10 quiz.
+- Use Bloom's levels.
+- Use exact field names and structure above
+- Ensure valid JSON syntax
 
+## Bloom's Levels
+- **Analyze**: Draw connections (Analyze, Differentiate, Examine)
 `,
     }
   ],
@@ -190,14 +214,14 @@ export const GenerateQuizAiModel = async (prompt) => {
 };
 
 
- const GenerateQnAConfig = {
-    thinkingConfig: {
-      thinkingBudget: 0,
-    },
-    responseMimeType: 'application/json',
-    systemInstruction: [
-        {
-          text: `
+const GenerateQnAConfig = {
+  thinkingConfig: {
+    thinkingBudget: 0,
+  },
+  responseMimeType: 'application/json',
+  systemInstruction: [
+    {
+      text: `
           The content will be in the given language but structure keywords like qna_list,question,answer remain in english
       Format your response as a JSON object with the following exact structure:
           {
@@ -210,10 +234,21 @@ export const GenerateQuizAiModel = async (prompt) => {
       "question": "string - question?",
       "answer": "string - answer"
     }
-}`,
-        }
-    ],
-  };
+}
+
+## Rules
+- Create max 10 qna.
+- Use Bloom's levels.
+- Use exact field names and structure above
+- Ensure valid JSON syntax
+
+## Bloom's Levels
+- **Evaluate**: Justify decisions (Evaluate, Critique, Argue)
+- **Create**: Produce original work (Design, Develop, Formulate)
+`,
+    }
+  ],
+};
 
 export const GenerateQnAAiModel = async (prompt) => {
   try {

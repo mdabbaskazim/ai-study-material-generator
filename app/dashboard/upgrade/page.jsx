@@ -51,7 +51,7 @@ export default function PricingPlans() {
   return (
     <div className="w-full max-w-5xl mx-auto p-6">
       <div className="text-center mb-16">
-        <h1 className="text-2xl font-semibold mb-2">Plans</h1>
+        <h1 className="text-2xl font-semibold mb-2">🚀 Plans</h1>
         <p className="text-sm text-gray-600">
           Update your plan to generate unlimited courses for your exam
         </p>
@@ -61,7 +61,7 @@ export default function PricingPlans() {
         {/* Free Plan */}
         <div className="border rounded-lg p-6 flex flex-col items-center text-center shadow-sm bg-white">
           <div className="mb-6">
-            <p className="text-base font-medium mb-2">Free</p>
+            <p className="text-base font-medium mb-2">✨ Free</p>
             <div className="flex items-baseline justify-center">
               <span className="text-3xl font-semibold">$0</span>
               <span className="text-sm text-gray-600 ml-1">/month</span>
@@ -95,7 +95,7 @@ export default function PricingPlans() {
         {/* Monthly Plan */}
         <div className="border rounded-lg p-6 flex flex-col items-center text-center shadow-sm bg-white">
           <div className="mb-6">
-            <p className="text-base font-medium mb-2">Monthly</p>
+            <p className="text-base font-medium mb-2">💸 Monthly</p>
             <div className="flex items-baseline justify-center">
               <span className="text-3xl font-semibold">$9.00</span>
               <span className="text-sm text-gray-600 ml-1">/month</span>
